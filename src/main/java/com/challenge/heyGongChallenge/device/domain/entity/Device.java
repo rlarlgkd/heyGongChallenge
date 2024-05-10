@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "device") // Define the table name; optional if you want it the same as the class name
-@Getter // Lombok annotation to generate getters automatically
-@Setter // Lombok annotation to generate setters automatically
+@Table(name = "device")
+@Getter
+@Setter
 @NoArgsConstructor
 public class Device extends BaseEntity {
     @Id
