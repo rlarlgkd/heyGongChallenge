@@ -4,7 +4,7 @@ import com.challenge.heyGongChallenge.token.domain.entity.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface RefreshRepository extends JpaRepository<Token, Long> {
+public interface RefreshRepository extends JpaRepository<Token, String> {
 
     Boolean existsByRefresh(String refresh);
 

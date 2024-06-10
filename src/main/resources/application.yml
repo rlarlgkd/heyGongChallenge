@@ -1,0 +1,54 @@
+spring.application.name: heyGongChallenge
+
+spring:
+  active.profile: oauth
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+  jwt.secret: 1234sjnkascknjscndsc&*&^SDKASKDhshshshshshkew8!!j
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1082940949723-i2vb2h7sadclb1p3ubvmo1e657m86uo6.apps.googleusercontent.com
+            client-secret: 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
+            scope: # google API? ?? ?
+              - profile
+              - email
+
+          kakao:
+            client-id: KAKAO_CLIENT
+            client-secret: KAKAO_SECRET
+            redirect-uri: baseUrl/login/oauth2/code/kakao
+            client-authentication-method: client_secret_post # kakao? ?? ?? ?? ?? ???? post??. (?? ???? ?? ??? ??? ????.)
+            authorization-grant-type: authorization_code
+            scope: # kakao ?? ?? ?? ?? ??? ID ?
+              - profile_nickname
+              - profile_image
+              - account_email
+            client-name: kakao
+
+        # kakao provider ??
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id # ?? ?? ?? ? ???? ??? ????? ?? ??.
+
+
+
+
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG

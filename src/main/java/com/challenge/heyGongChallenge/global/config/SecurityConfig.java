@@ -1,15 +1,16 @@
 package com.challenge.heyGongChallenge.global.config;
 
-import com.example.springjwt.jwt.JWTUtil;
+import com.challenge.heyGongChallenge.auth.application.CustomOAuth2UserService;
+import com.challenge.heyGongChallenge.auth.jwt.JWTFilter;
+import com.challenge.heyGongChallenge.auth.jwt.JWTUtil;
+import com.challenge.heyGongChallenge.token.domain.repository.RefreshRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -21,28 +22,18 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    private final AuthenticationConfiguration authenticationConfiguration;
+    private final CustomOAuth2UserService customOAuth2UserService;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final CustomSuccessHandler customSuccessHandler;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
 
-        this.authenticationConfiguration = authenticationConfiguration;
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, CustomSuccessHandler customSuccessHandler,
+                          JWTUtil jwtUtil, RefreshRepository refreshRepository, CustomOAuth2UserService customOAuth2UserService) {
+        this.customSuccessHandler = customSuccessHandler;
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-
-        return configuration.getAuthenticationManager();
-    }
-
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-
-        return new BCryptPasswordEncoder();
+        this.customOAuth2UserService = customOAuth2UserService;
     }
 
     @Bean
@@ -81,20 +72,26 @@ public class SecurityConfig {
         http
                 .httpBasic((auth) -> auth.disable());
 
+        //oauth2
+        http
+                .oauth2Login((oauth2) -> oauth2
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
+                        .successHandler(customSuccessHandler)
+                );
+
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join").permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/reissue").permitAll()
+                        .requestMatchers( "/").permitAll()
                         .anyRequest().authenticated());
 
-        http
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
-        http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
-        http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
+//        http
+//                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+//        http
+//                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
 
 
         //세션 설정

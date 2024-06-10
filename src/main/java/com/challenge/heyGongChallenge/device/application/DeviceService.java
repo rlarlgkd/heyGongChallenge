@@ -20,7 +20,7 @@ public class DeviceService {
     @Transactional(readOnly = true)
     public Device getDeviceById(String deviceId) {
 
-        return deviceRepository.findById(deviceId);
+        return deviceRepository.findByDeviceId(deviceId);
 
     }
 

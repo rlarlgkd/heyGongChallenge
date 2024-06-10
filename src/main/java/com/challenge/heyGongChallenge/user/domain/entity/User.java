@@ -23,7 +23,7 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userSeq;
 
-    @Column(nullable = false)
+    @Column
     private String deviceId;
 
     @Column

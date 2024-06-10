@@ -1,11 +1,11 @@
 package com.challenge.heyGongChallenge.auth.jwt;
 
 
+
 import com.challenge.heyGongChallenge.auth.presentation.CustomOAuth2User;
 import com.challenge.heyGongChallenge.auth.presentation.UserDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,26 +15,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import com.example.springjwt.dto.CustomUserDetails;
-import com.example.springjwt.entity.UserEntity;
+
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
+
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
 public class JWTFilter extends OncePerRequestFilter {
 
-    private final com.example.springjwt.jwt.JWTUtil jwtUtil;
+    private final JWTUtil jwtUtil;
 
-    public JWTFilter(com.example.springjwt.jwt.JWTUtil jwtUtil) {
+    public JWTFilter(JWTUtil jwtUtil) {
 
         this.jwtUtil = jwtUtil;
     }
@@ -83,15 +75,17 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         // username, role 값을 획득
-        String username = jwtUtil.getUsername(accessToken);
+        String userId = jwtUtil.getUserId(accessToken);
         String role = jwtUtil.getRole(accessToken);
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(username);
-        userEntity.setRole(role);
-        CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
+        //userDTO를 생성하여 값 set
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserId(userId);
+        userDTO.setRole(role);
+        //UserDetails에 회원 정보 객체 담기
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
 
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         filterChain.doFilter(request, response);

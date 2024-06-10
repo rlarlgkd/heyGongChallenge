@@ -1,6 +1,6 @@
 package com.challenge.heyGongChallenge.auth.jwt;
 
-import com.example.springjwt.repository.RefreshRepository;
+import com.challenge.heyGongChallenge.token.domain.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,10 +15,10 @@ import java.io.IOException;
 
 public class CustomLogoutFilter extends GenericFilterBean {
 
-    private final com.example.springjwt.jwt.JWTUtil jwtUtil;
+    private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
 
-    public CustomLogoutFilter(com.example.springjwt.jwt.JWTUtil jwtUtil, RefreshRepository refreshRepository) {
+    public CustomLogoutFilter(JWTUtil jwtUtil, RefreshRepository refreshRepository) {
 
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;

@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Token extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String refreshToken;
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String refresh;
 
     @Column
     private Long userSeq;
